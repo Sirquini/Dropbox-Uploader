@@ -18,52 +18,67 @@ if [ -z "$(zenity --version)" ]; then
     exit 1
 fi
 
+
+#############
+# Funciones #
+#############
+
 function upload
 {
-	echo "placeholder"
+	echo "Uploaded"
 }
+
 function download
 {
-	echo "placeholder"
+	echo "Downloaded"
 }
+
 function delete
 {
-	echo "placeholder"
+	echo "Deleted"
 }
+
 function move
 {
-	echo "placeholder"
+	echo "Moved"
 }
+
 function copy
 {
-	echo "placeholder"
+	echo "Copied"
 }
+
 function mkdir
 {
-	echo "placeholder"
+	echo "Dir made"
 }
+
 function list
 {
-	echo "placeholder"
+	echo "Listed"
 }
+
 function share
 {
-	echo "placeholder"
+	echo "Shared"
 }
+
 function info
 {
-	echo "placeholder"
+	echo "Showing Info"
 }
+
 function unlink
 {
-	echo "placeholder"
+	echo "Unlinked Account"
 }
 
 
 ##########
 # Zenity #
 ##########
-zenity --list --radiolist\
+
+COMMANDO=$(zenity --list --radiolist\
 	--title="Elija la accion que desea tomar." \
 	--column="" --column="" --column="Accion" --hide-column=2 \
 	TRUE "upload" "Subir archivo/directorio" \
@@ -75,4 +90,31 @@ zenity --list --radiolist\
 	FALSE "list" "Listar contenido de un directorio" \
 	FALSE "share" "Link puclico para compartir archivo" \
 	FALSE "info" "Informacion de la cuenta Dropbox" \
-	FALSE "unlink" "Deslinkear script de la cuenta Dropbox"
+	FALSE "unlink" "Deslinkear script de la cuenta Dropbox")
+
+
+if [ $COMMANDO = "upload" ]; then
+	upload
+elif [ $COMMANDO = "download" ]; then
+	download
+elif [ $COMMANDO = "delete" ]; then
+	delete
+elif [ $COMMANDO = "move" ]; then
+	move
+elif [ $COMMANDO = "copy" ]; then
+	copy
+elif [ $COMMANDO = "mkdir" ]; then
+	mkdir
+elif [ $COMMANDO = "list" ]; then
+	list
+elif [ $COMMANDO = "share" ]; then
+	share
+elif [ $COMMANDO = "info" ]; then
+	info
+elif [ $COMMANDO = "unlink" ]; then
+	unlink
+else
+	echo "Error: Accion no reconocida!"
+	exit 1
+fi
+
