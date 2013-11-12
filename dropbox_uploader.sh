@@ -1030,30 +1030,25 @@ if [[ -f $CONFIG_FILE ]]; then
 
 #NEW SETUP...
 else
-
-    echo -ne "\n This is the first time you run this script.\n\n"
-    echo -ne " 1) Open the following URL in your Browser, and log in using your account: $APP_CREATE_URL\n"
-    echo -ne " 2) Click on \"Create App\", then select \"Dropbox API app\"\n"
-    echo -ne " 3) Select \"Files and datastores\"\n"
-    echo -ne " 4) Now go on with the configuration, choosing the app permissions and access restrictions to your DropBox folder\n"
-    echo -ne " 5) Enter the \"App Name\" that you prefer (e.g. MyUploader$RANDOM$RANDOM$RANDOM)\n\n"
-
-    echo -ne " Now, click on the \"Create App\" button.\n\n"
-
-    echo -ne " When your new App is successfully created, please type the\n"
-    echo -ne " App Key, App Secret and the Permission type shown in the confirmation page:\n\n"
+    zenity --info \
+            --title="Primer uso" \
+            --text="Esta es la primera vez que corre este script\n \
+            1) Abre la siguiente URL en tu navegador, ingresa usando tu cuenta DropBox: https://www2.dropbox.com/developers/apps\n \
+            2) Clic en \"Create App\", selecciona \"Dropbox API app\"\n \
+            3) Selecciona \"Files and datastores\"\n \
+            4) Ahora continua con la configuraccion, escgiendo los permisos de la aplicacion y el acceso a restricciones de tu carpeta DropBox\n \
+            5) Ingresa el \"App Name\" que prefieras (e.g. MyUploader$RANDOM$RANDOM$RANDOM)\n\n \
+            Ahora, haz clic en \"Create App\".\n\n \
+            Cuando tu nueva aplicacion sea correctamente creada,\n \
+            ingresa tu App Key, App Secret y el Permission type mostrado en la pagina de configuracion"
 
     #Getting the app key and secret from the user
     while (true); do
 
-        echo -n " # App key: "
-        read APPKEY
+        APPKEY=$(zenity --entry --title="App key" --text="Ingresa tu App Key")
+        APPSECRET=$(zenity --entry --title="App secret" --text="Ingresa tu App Secret")
+        ACCESS_LEVEL=$(zenity --entry --title="Permission Type" --text="Tipo de permisos, App folder o Full Dropbox [a/f]")
 
-        echo -n " # App secret: "
-        read APPSECRET
-
-        echo -n " # Permission type, App folder or Full Dropbox [a/f]: "
-        read ACCESS_LEVEL
 
         if [[ $ACCESS_LEVEL == "a" ]]; then
             ACCESS_LEVEL="sandbox"
@@ -1063,25 +1058,22 @@ else
             ACCESS_MSG="Full Dropbox"
         fi
 
-        echo -ne "\n > App key is $APPKEY, App secret is $APPSECRET and Access level is $ACCESS_MSG. Looks ok? [y/n]"
-        read answer
-        if [[ $answer == "y" ]]; then
-            break;
+        if zenity --question --text="App key es $DB_APP_KEY, App secret es $DB_APP_SECRET y el nivel de acceso es $ACCESS_MSG. ok?"; then
+        break;
         fi
-
     done
 
     #TOKEN REQUESTS
-    echo -ne "\n > Token request... "
+    zenity --info --title="Dropbox Uploader" --text="Token request..."
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o $RESPONSE_FILE --data "oauth_consumer_key=$APPKEY&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM" "$API_REQUEST_TOKEN_URL" 2> /dev/null
     check_http_response
     OAUTH_TOKEN_SECRET=$(sed -n 's/oauth_token_secret=\([a-z A-Z 0-9]*\).*/\1/p' "$RESPONSE_FILE")
     OAUTH_TOKEN=$(sed -n 's/.*oauth_token=\([a-z A-Z 0-9]*\)/\1/p' "$RESPONSE_FILE")
 
     if [[ $OAUTH_TOKEN != "" && $OAUTH_TOKEN_SECRET != "" ]]; then
-        echo -ne "OK\n"
+        zenity --info --title="Dropbox Uploader" --text="OK"
     else
-        echo -ne " FAILED\n\n Please, check your App key and secret...\n\n"
+        zenity --error --title="Dropbox Uploader" --text="FAILED\n\n Por favor, revisa tu App key y secret..."
         remove_temp_files
         exit 1
     fi
@@ -1089,13 +1081,11 @@ else
     while (true); do
 
         #USER AUTH
-        echo -ne "\n Please open the following URL in your browser, and allow Dropbox Uploader\n"
-        echo -ne " to access your DropBox folder:\n\n --> ${API_USER_AUTH_URL}?oauth_token=$OAUTH_TOKEN\n"
-        echo -ne "\nPress enter when done...\n"
-        read
+        zenity --info --title="Dropbox Uploader" --text="Por favor abra la siguiente URL en el navegador y permita que Dropbox Uploader \
+        pueda acceder a su directorio de Dropbox --> ${API_USER_AUTH_URL}?oauth_token=$OAUTH_TOKEN"
 
         #API_ACCESS_TOKEN_URL
-        echo -ne " > Access Token request... "
+        zenity --info --title="Dropbox Uploader" --text="Access Token request..."
         $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o $RESPONSE_FILE --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM" "$API_ACCESS_TOKEN_URL" 2> /dev/null
         check_http_response
         OAUTH_ACCESS_TOKEN_SECRET=$(sed -n 's/oauth_token_secret=\([a-z A-Z 0-9]*\)&.*/\1/p' "$RESPONSE_FILE")
@@ -1103,7 +1093,7 @@ else
         OAUTH_ACCESS_UID=$(sed -n 's/.*uid=\([0-9]*\)/\1/p' "$RESPONSE_FILE")
 
         if [[ $OAUTH_ACCESS_TOKEN != "" && $OAUTH_ACCESS_TOKEN_SECRET != "" && $OAUTH_ACCESS_UID != "" ]]; then
-            echo -ne "OK\n"
+            zenity --info --title="Access Token request..." --text="OK\n"
 
             #Saving data in new format, compatible with source command.
             echo "APPKEY=$APPKEY" > "$CONFIG_FILE"
@@ -1112,7 +1102,7 @@ else
             echo "OAUTH_ACCESS_TOKEN=$OAUTH_ACCESS_TOKEN" >> "$CONFIG_FILE"
             echo "OAUTH_ACCESS_TOKEN_SECRET=$OAUTH_ACCESS_TOKEN_SECRET" >> "$CONFIG_FILE"
 
-            echo -ne "\n Setup completed!\n"
+            zenity --info --title="Dropbox Uploader" --text="Completada la configuracion!"
             break
         else
             print " FAILED\n"

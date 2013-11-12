@@ -145,41 +145,7 @@ function unlink
 if [[ -f $CONFIG_FILE ]]; then
 	echo "Config file found ..."
 else
-	zenity --info \
-		--title="Primer uso" \
-		--text="Esta es la primera vez que corre este script\n \
-		1) Abre la siguiente URL en tu navegador, ingresa usando tu cuenta DropBox: https://www2.dropbox.com/developers/apps\n \
-		2) Clic en \"Create App\", selecciona \"Dropbox API app\"\n \
-		3) Selecciona \"Files and datastores\"\n \
-		4) Ahora continua con la configuraccion, escgiendo los permisos de la aplicacion y el acceso a restricciones de tu carpeta DropBox\n \
-		5) Ingresa el \"App Name\" que prefieras (e.g. MyUploader$RANDOM$RANDOM$RANDOM)\n\n \
-		Ahora, haz clic en \"Create App\".\n\n \
-		Cuando tu nueva aplicacion sea correctamente creada,\n \
-		ingresa tu App Key, App Secret y el Permission type mostrado en la pagina de configuracion"
-
-	zenity --info --title="Primer uso" \
-		--text="Por Favor ejecuta en tu terminal el comando\n $DU \n y luego vuelve a ejecutar este script"
-
-	exit 0
-
-	# while (true); do
-
-	# 	DB_APP_KEY=$(zenity --entry --title="App key" --text="Ingresa tu App Key")
-	# 	DB_APP_SECRET=$(zenity --entry --title="App secret" --text="Ingresa tu App Secret")
-	# 	DB_PERMISSION=$(zenity --entry --title="Permission Type" --text="Permission type, App folder or Full Dropbox [a/f]")
-
-
-	# 	if [[ $DB_PERMISSION == "a" ]]; then
-	# 		ACCESS_MSG="App Folder"
-	# 	else
-	# 		ACCESS_MSG="Full Dropbox"
-	# 	fi
-
-	# 	if zenity --question --text="App key es $DB_APP_KEY, App secret es $DB_APP_SECRET y el nivel de acceso es $ACCESS_MSG. ok?"; then
-	# 		break;
-	# 	fi
-	# done
-
+	$DU -g version
 fi
 
 ##########
