@@ -1242,6 +1242,12 @@ case $COMMAND in
 
     ;;
 
+    version)
+
+        echo $VERSION
+
+    ;;
+
     *)
 
         if [[ $COMMAND != "" ]]; then
