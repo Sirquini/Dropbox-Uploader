@@ -84,42 +84,57 @@ function download
 
 function delete
 {
-	echo "Deleted"
+	local DST=`getFileRemote`
+	$DU -g delete $DST
+	dropGUI
 }
 
 function move
 {
-	echo "Moved"
+	local SRC=`getFileRemote`
+	local DST=`getFileRemote`
+	$DU -g move $SRC $DST
+	dropGUI
 }
 
 function copy
 {
-	echo "Copied"
+	local SRC=`getFileRemote`
+	local DST=`getFileRemote`
+	$DU -g copy $SRC $DST
+	dropGUI
 }
 
 function mkdir
 {
-	echo "Dir made"
+	local DST=`getFileRemote`
+	$DU -g mkdir $DST
+	dropGUI
 }
 
 function list
 {
-	echo "Listed"
+	local DST=`optFileSelect 1`
+	$DU -g list $DST
 }
 
 function share
 {
-	echo "Shared"
+	local DST=`getFileRemote`
+	$DU -g share $DST
+	dropGUI
 }
 
 function info
 {
-	echo "Showing Info"
+	$DU -g info
+	dropGUI
 }
 
 function unlink
 {
-	echo "Unlinked Account"
+	$DU -g unlink
+	dropGUI
 }
 
 ##########

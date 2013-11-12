@@ -152,7 +152,11 @@ function print
 {
     if [[ $QUIET == 0 ]]; then
         if [[ $GUI == 1 ]]; then
-            zenity --info --text="$1";
+            if [[ `echo "$1" grep -c ` != 0 ]]; then
+                zenity --error --text="$1";
+            else
+                zenity --info --text="$1";
+            fi
         else
 	       echo -ne "$1";
         fi
