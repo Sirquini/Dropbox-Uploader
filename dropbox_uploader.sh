@@ -472,7 +472,7 @@ function db_simple_upload_file
         LINE_CR=""
     fi
 
-    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
+    print "Uploading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS -i --globoff -o "$RESPONSE_FILE" --upload-file "$FILE_SRC" "$API_UPLOAD_URL/$ACCESS_LEVEL/$(urlencode "$FILE_DST")?oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM"
     check_http_response
 
@@ -493,7 +493,7 @@ function db_chunked_upload_file
     local FILE_SRC=$(normalize_path "$1")
     local FILE_DST=$(normalize_path "$2")
 
-    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\""
+    print "Uploading \"$FILE_SRC\" to \"$FILE_DST\""
 
     local FILE_SIZE=$(file_size "$FILE_SRC")
     local OFFSET=0
@@ -815,7 +815,7 @@ function db_delete
 {
     local FILE_DST=$(normalize_path "$1")
 
-    print " > Deleting \"$FILE_DST\"... "
+    print "Deleting \"$FILE_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM&root=$ACCESS_LEVEL&path=$(urlencode "$FILE_DST")" "$API_DELETE_URL" 2> /dev/null
     check_http_response
 
@@ -844,7 +844,7 @@ function db_move
         FILE_DST=$(normalize_path "$FILE_DST/$filename")
     fi
 
-    print " > Moving \"$FILE_SRC\" to \"$FILE_DST\" ... "
+    print "Moving \"$FILE_SRC\" to \"$FILE_DST\" ... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM&root=$ACCESS_LEVEL&from_path=$(urlencode "$FILE_SRC")&to_path=$(urlencode "$FILE_DST")" "$API_MOVE_URL" 2> /dev/null
     check_http_response
 
@@ -873,7 +873,7 @@ function db_copy
         FILE_DST=$(normalize_path "$FILE_DST/$filename")
     fi
 
-    print " > Copying \"$FILE_SRC\" to \"$FILE_DST\" ... "
+    print "Copying \"$FILE_SRC\" to \"$FILE_DST\" ... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM&root=$ACCESS_LEVEL&from_path=$(urlencode "$FILE_SRC")&to_path=$(urlencode "$FILE_DST")" "$API_COPY_URL" 2> /dev/null
     check_http_response
 

@@ -154,7 +154,7 @@ fi
 function dropGUI
 {
 	COMMANDO=$(zenity --list --radiolist\
-		--title="Choose an action." --height=600 \
+		--title="Choose an action." --height=350 --width=340 \
 		--column="" --column="" --column="Action" --hide-column=2 \
 		TRUE "upload" "Upload a file/directory" \
 		FALSE "download" "Download a file/directory" \
