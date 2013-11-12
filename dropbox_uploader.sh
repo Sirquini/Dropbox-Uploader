@@ -152,7 +152,7 @@ function print
 {
     if [[ $QUIET == 0 ]]; then
         if [[ $GUI == 1 ]]; then
-            if [[ `echo "$1" grep -c ` != 0 ]]; then
+            if [[ `echo "$1" | grep -c Error:` != 0 || `echo "$1" | grep -c FAILED` != 0 ]]; then
                 zenity --error --text="$1";
             else
                 zenity --info --text="$1";
@@ -755,26 +755,38 @@ function db_account_info
     if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
 
         name=$(sed -n 's/.*"display_name": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
-        echo -e "\n\nName:\t$name"
 
         uid=$(sed -n 's/.*"uid": \([0-9]*\).*/\1/p' "$RESPONSE_FILE")
-        echo -e "UID:\t$uid"
 
         email=$(sed -n 's/.*"email": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
-        echo -e "Email:\t$email"
 
         quota=$(sed -n 's/.*"quota": \([0-9]*\).*/\1/p' "$RESPONSE_FILE")
         let quota_mb=$quota/1024/1024
-        echo -e "Quota:\t$quota_mb Mb"
 
         used=$(sed -n 's/.*"normal": \([0-9]*\).*/\1/p' "$RESPONSE_FILE")
         let used_mb=$used/1024/1024
-        echo -e "Used:\t$used_mb Mb"
 
         let free_mb=($quota-$used)/1024/1024
-        echo -e "Free:\t$free_mb Mb"
 
-        echo ""
+        if [[ $GUI == 1 ]]; then
+            local TMP_GUI_FILE="$TMP_DIR/dugui_resp_$RANDOM"
+            echo -e "\n\nName:\t$name" >> $TMP_GUI_FILE
+            echo -e "UID:\t$uid" >> $TMP_GUI_FILE
+            echo -e "Email:\t$email" >> $TMP_GUI_FILE
+            echo -e "Quota:\t$quota_mb Mb" >> $TMP_GUI_FILE
+            echo -e "Used:\t$used_mb Mb" >> $TMP_GUI_FILE
+            echo -e "Free:\t$free_mb Mb" >> $TMP_GUI_FILE
+            zenity --text-info --filename=$TMP_GUI_FILE
+            rm -f $TMP_GUI_FILE
+        else
+            echo -e "\n\nName:\t$name"
+            echo -e "UID:\t$uid"
+            echo -e "Email:\t$email"
+            echo -e "Quota:\t$quota_mb Mb"
+            echo -e "Used:\t$used_mb Mb"
+            echo -e "Free:\t$free_mb Mb"
+            echo ""
+        fi
 
     else
         print "FAILED\n"
@@ -920,19 +932,40 @@ function db_list
             #Extracing files and subfolders
             echo "$DIR_CONTENT" | sed -n 's/.*"path": *"\([^"]*\)",.*"is_dir": *\([^"]*\),.*/\1:\2/p' > $RESPONSE_FILE
 
-            #For each line...
-            while read -r line; do
+            if [[ $GUI == 1 ]];  then
+                local TMP_GUI_FILE="$TMP_DIR/dugui_resp_$RANDOM"
+                #For each line...
+                while read -r line; do
 
-                local FILE=${line%:*}
-                FILE=${FILE##*/}
-                local TYPE=${line#*:}
+                    local FILE=${line%:*}
+                    FILE=${FILE##*/}
+                    local TYPE=${line#*:}
 
-                if [[ $TYPE == "false" ]]; then
-                    echo -ne " [F] $FILE\n"
-                else
-                    echo -ne " [D] $FILE\n"
-                fi
-            done < $RESPONSE_FILE
+                    if [[ $TYPE == "false" ]]; then
+                        echo -ne " [F] $FILE\n" >> $TMP_GUI_FILE
+                    else
+                        echo -ne " [D] $FILE\n" >> $TMP_GUI_FILE
+                    fi
+                done < $RESPONSE_FILE
+
+                zenity --text-info --filename=$TMP_GUI_FILE
+
+                rm -f $TMP_GUI_FILE
+            else
+                #For each line...
+                while read -r line; do
+
+                    local FILE=${line%:*}
+                    FILE=${FILE##*/}
+                    local TYPE=${line#*:}
+
+                    if [[ $TYPE == "false" ]]; then
+                        echo -ne " [F] $FILE\n"
+                    else
+                        echo -ne " [D] $FILE\n"
+                    fi
+                done < $RESPONSE_FILE
+            fi            
 
         #It's a file
         else
@@ -958,7 +991,12 @@ function db_share
     #Check
     if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
         print " > Share link: "
-        echo $(sed -n 's/.*"url": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
+        if [[ $GUI == 1 ]]; then
+            zenity --entry --title="Share Link:" --text="Share Link:" \
+            --entry-text=$(sed -n 's/.*"url": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
+        else
+            echo $(sed -n 's/.*"url": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
+        fi
     else
         print "FAILED\n"
         ERROR_STATUS=1

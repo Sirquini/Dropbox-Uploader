@@ -116,6 +116,7 @@ function list
 {
 	local DST=`optFileSelect 1`
 	$DU -g list $DST
+	dropGUI
 }
 
 function share
@@ -202,26 +203,28 @@ function dropGUI
 		FALSE "unlink" "Deslinkear script de la cuenta Dropbox")
 
 
-	if [ $COMMANDO = "upload" ]; then
+	if [[ $COMMANDO = "upload" ]]; then
 		upload
-	elif [ $COMMANDO = "download" ]; then
+	elif [[ $COMMANDO = "download" ]]; then
 		download
-	elif [ $COMMANDO = "delete" ]; then
+	elif [[ $COMMANDO = "delete" ]]; then
 		delete
-	elif [ $COMMANDO = "move" ]; then
+	elif [[ $COMMANDO = "move" ]]; then
 		move
-	elif [ $COMMANDO = "copy" ]; then
+	elif [[ $COMMANDO = "copy" ]]; then
 		copy
-	elif [ $COMMANDO = "mkdir" ]; then
+	elif [[ $COMMANDO = "mkdir" ]]; then
 		mkdir
-	elif [ $COMMANDO = "list" ]; then
+	elif [[ $COMMANDO = "list" ]]; then
 		list
-	elif [ $COMMANDO = "share" ]; then
+	elif [[ $COMMANDO = "share" ]]; then
 		share
-	elif [ $COMMANDO = "info" ]; then
+	elif [[ $COMMANDO = "info" ]]; then
 		info
-	elif [ $COMMANDO = "unlink" ]; then
+	elif [[ $COMMANDO = "unlink" ]]; then
 		unlink
+	elif [[ $COMMANDO = "" ]]; then
+		echo "Cerrando ..."
 	else
 		echo "Error: Accion no reconocida!"
 		exit 1
