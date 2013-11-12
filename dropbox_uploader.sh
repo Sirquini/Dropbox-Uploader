@@ -35,6 +35,7 @@ CHUNK_SIZE=4
 TMP_DIR="/tmp"
 DEBUG=0
 QUIET=0
+GUI=0
 SHOW_PROGRESSBAR=0
 SKIP_EXISTING_FILES=0
 ERROR_STATUS=0
@@ -72,7 +73,7 @@ shopt -s nullglob #Bash allows filename patterns which match no files to expand 
 shopt -s dotglob  #Bash includes filenames beginning with a "." in the results of filename expansion
 
 #Look for optional config file parameter
-while getopts ":qpskdf:" opt; do
+while getopts ":qpskdgf:" opt; do
     case $opt in
 
     f)
@@ -81,6 +82,10 @@ while getopts ":qpskdf:" opt; do
 
     d)
       DEBUG=1
+    ;;
+
+    g)
+      GUI=1
     ;;
 
     q)
@@ -146,7 +151,11 @@ fi
 function print
 {
     if [[ $QUIET == 0 ]]; then
-	    echo -ne "$1";
+        if [[ $GUI == 1 ]]; then
+            zenity --info --text="$1";
+        else
+	       echo -ne "$1";
+        fi
     fi
 }
 
