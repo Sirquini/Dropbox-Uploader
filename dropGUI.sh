@@ -5,7 +5,7 @@ CONFIG_FILE=~/.dropbox_uploader
 
 #Check the shell
 if [ -z "$BASH_VERSION" ]; then
-    echo -e "Error: Este script requiere el shell de BASH!"
+    echo -e "Error: this script requires the BASH shell!"
     exit 1
 fi
 
@@ -24,8 +24,8 @@ fi
 
 #Check Zenity
 if [ -z "$(zenity --version)" ]; then
-    echo -e "Error: Este script requiere Zenity"
-    echo -e "Para instalar en Debian/Ubuntu, intente:"
+    echo -e "Error: this script requires Zenity"
+    echo -e "To install it in Debian/Ubuntu, try:"
     echo -e "	sudo apt-get install zenity\n"
     exit 1
 fi
@@ -42,24 +42,24 @@ function normalizePath
 
 function getFileSelect
 {
-	zenity --file-selection --title="Selecciona un archivo/directorio"
+	zenity --file-selection --title="Select a file/directory"
 }
 
 function getFileRemote
 {
-	zenity --entry --title="Ingresa un archivo/directorio" --text="Archivo/directorio remoto:"
+	zenity --entry --title="Enter a file/directory" --text="Remote file/directory:"
 }
 
 function optFileSelect
 {
 	if [ $1 = 1 ]; then
-		Texto_opcional="Desea ingresar el archivo/directorio remoto?"
+		Texto_opcional="Do you wish to enter the remote file/directory?"
 	else
-		Texto_opcional="Desea ingresar el archivo/directorio local?"
+		Texto_opcional="Do you wish to enter the local file/directory?"
 	fi
-	if zenity --question --title="Argumento Opcional" --text="$Texto_opcional"; then
+	if zenity --question --title="Optional parameter" --text="$Texto_opcional"; then
 		if [ $1 = 1 ]; then
-			zenity --entry --title="Remoto" --text="Ingresa el archivo/directorio:"
+			zenity --entry --title="Remote" --text="Enter the file/directory:"
 		else
 			zenity --file-selection --title="Local"
 		fi
@@ -154,18 +154,18 @@ fi
 function dropGUI
 {
 	COMMANDO=$(zenity --list --radiolist\
-		--title="Elija la accion que desea tomar." \
-		--column="" --column="" --column="Accion" --hide-column=2 \
-		TRUE "upload" "Subir archivo/directorio" \
-		FALSE "download" "Descargar archivo/directorio" \
-		FALSE "delete" "Eliminar archivo/directorio" \
-		FALSE "move" "Mover (renombrar) archivo/directorio" \
-		FALSE "copy" "Copiar archivo/directorio" \
-		FALSE "mkdir" "Crear un directorio" \
-		FALSE "list" "Listar contenido de un directorio" \
-		FALSE "share" "Link puclico para compartir archivo" \
-		FALSE "info" "Informacion de la cuenta Dropbox" \
-		FALSE "unlink" "Deslinkear script de la cuenta Dropbox")
+		--title="Choose an action." --height=600 \
+		--column="" --column="" --column="Action" --hide-column=2 \
+		TRUE "upload" "Upload a file/directory" \
+		FALSE "download" "Download a file/directory" \
+		FALSE "delete" "Delete a file/directory" \
+		FALSE "move" "Move or rename a file/directory" \
+		FALSE "copy" "Copy  a file/directory" \
+		FALSE "mkdir" "Create a new directory" \
+		FALSE "list" "List the content of a Dropbox directory" \
+		FALSE "share" "Get a public link to share a file" \
+		FALSE "info" "Get your Dropbox account info" \
+		FALSE "unlink" "Unlink this script from your account")
 
 
 	if [[ $COMMANDO = "upload" ]]; then
@@ -189,9 +189,9 @@ function dropGUI
 	elif [[ $COMMANDO = "unlink" ]]; then
 		unlink
 	elif [[ $COMMANDO = "" ]]; then
-		echo "Cerrando ..."
+		echo "Closing ..."
 	else
-		echo "Error: Accion no reconocida!"
+		echo "Error: Unknown action!"
 		exit 1
 	fi
 }

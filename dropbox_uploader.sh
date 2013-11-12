@@ -1035,22 +1035,22 @@ if [[ -f $CONFIG_FILE ]]; then
 #NEW SETUP...
 else
     zenity --info \
-            --title="Primer uso" \
-            --text="Esta es la primera vez que corre este script \
-            \n1) Abre la siguiente URL en tu navegador, ingresa usando tu cuenta DropBox: https://www2.dropbox.com/developers/apps \
-            \n2) Clic en \"Create App\", selecciona \"Dropbox API app\" \
-            \n3) Selecciona \"Files and datastores\" \
-            \n4) Ahora continua con la configuraccion, escgiendo los permisos de la aplicacion y el acceso a restricciones de tu carpeta DropBox \
-            \n5) Ingresa el \"App Name\" que prefieras (e.g. MyUploader$RANDOM$RANDOM$RANDOM) \
-            \nAhora, haz clic en \"Create App\". \
-            \nCuando tu nueva aplicacion sea correctamente creada, ingresa tu App Key, App Secret y el tipo de permisos mostrado en la pagina de configuracion."
+            --title="First time setup" \
+            --text="This is the first time you run this script. \
+            \n1) Open the following URL in your Browser, and log in using your account: $APP_CREATE_URL \
+            \n2) Click on \"Create App\", then select \"Dropbox API app\" \
+            \n3) Select \"Files and datastores\" \
+            \n4) Now go on with the configuration, choosing the app permissions and access restrictions to your Dropbox folder \
+            \n5) Enter the \"App Name\" that you prefer (e.g. MyUploader$RANDOM$RANDOM$RANDOM) \
+            \nNow, click on the \"Create App\" button. \
+            \nWhen your new App is successfully created, please type the App Key, App Secret and the Permission type shown in the confirmation page."
 
     #Getting the app key and secret from the user
     while (true); do
 
-        APPKEY=$(zenity --entry --title="App key" --text="Ingresa tu App Key")
-        APPSECRET=$(zenity --entry --title="App secret" --text="Ingresa tu App Secret")
-        ACCESS_LEVEL=$(zenity --entry --title="Permission Type" --text="Tipo de permisos, App folder o Full Dropbox [a/f]")
+        APPKEY=$(zenity --entry --title="App key" --text="Enter your App Key")
+        APPSECRET=$(zenity --entry --title="App secret" --text="Enter your App Secret")
+        ACCESS_LEVEL=$(zenity --entry --title="Permission Type" --text="Permission type, App folder or Full Dropbox [a/f]")
 
 
         if [[ $ACCESS_LEVEL == "a" ]]; then
@@ -1061,7 +1061,7 @@ else
             ACCESS_MSG="Full Dropbox"
         fi
 
-        if zenity --question --text="App key es $APPKEY, App secret es $APPSECRET y el nivel de acceso es $ACCESS_MSG. ok?"; then
+        if zenity --question --text="App key is $APPKEY, App secret is $APPSECRET and Access level is $ACCESS_MSG. Looks ok?"; then
         break;
         fi
     done
@@ -1076,7 +1076,7 @@ else
     if [[ $OAUTH_TOKEN != "" && $OAUTH_TOKEN_SECRET != "" ]]; then
         zenity --info --title="Dropbox Uploader" --text="OK"
     else
-        zenity --error --title="Dropbox Uploader" --text="FAILED\n\n Por favor, revisa tu App key y secret..."
+        zenity --error --title="Dropbox Uploader" --text="FAILED\n\n Please, check your App key and secret......"
         remove_temp_files
         exit 1
     fi
@@ -1084,8 +1084,8 @@ else
     while (true); do
 
         #USER AUTH
-        zenity --info --title="Dropbox Uploader" --text="Por favor abra la siguiente URL en el navegador y permita que Dropbox Uploader \
-        pueda acceder a su directorio de Dropbox --> ${API_USER_AUTH_URL}?oauth_token=$OAUTH_TOKEN"
+        zenity --info --title="Dropbox Uploader" --text="Please open the following URL in your browser, and allow Dropbox Uploader \
+        to access your DropBox folder:\n --> ${API_USER_AUTH_URL}?oauth_token=$OAUTH_TOKEN"
 
         #API_ACCESS_TOKEN_URL
         zenity --info --title="Dropbox Uploader" --text="Access Token request..."
@@ -1105,7 +1105,7 @@ else
             echo "OAUTH_ACCESS_TOKEN=$OAUTH_ACCESS_TOKEN" >> "$CONFIG_FILE"
             echo "OAUTH_ACCESS_TOKEN_SECRET=$OAUTH_ACCESS_TOKEN_SECRET" >> "$CONFIG_FILE"
 
-            zenity --info --title="Dropbox Uploader" --text="Completada la configuracion!"
+            zenity --info --title="Dropbox Uploader" --text="Setup completed!"
             break
         else
             print " FAILED\n"
