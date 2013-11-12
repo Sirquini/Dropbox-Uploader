@@ -378,14 +378,14 @@ function db_upload
 
     #Checking if the file/dir exists
     if [[ ! -f $SRC && ! -d $SRC ]]; then
-        print " > No such file or directory: $SRC\n"
+        print "No such file or directory: $SRC\n"
         ERROR_STATUS=1
         return
     fi
 
     #Checking if the file/dir has read permissions
     if [[ ! -r $SRC ]]; then
-        print " > Error reading file $SRC: permission denied\n"
+        print "Error reading file $SRC: permission denied\n"
         ERROR_STATUS=1
         return
     fi
@@ -407,7 +407,7 @@ function db_upload
 
     #Unsupported object...
     else
-        print " > Skipping not regular file \"$SRC\"\n"
+        print "Skipping not regular file \"$SRC\"\n"
     fi
 }
 
@@ -431,7 +431,7 @@ function db_upload_file
           $basefile_dst == ".dropbox" || \
           $basefile_dst == ".dropbox.attr" \
        ]]; then
-        print " > Skipping not allowed file name \"$FILE_DST\"\n"
+        print "Skipping not allowed file name \"$FILE_DST\"\n"
         return
     fi
 
@@ -443,7 +443,7 @@ function db_upload_file
     #Checking if the file already exists
     TYPE=$(db_stat "$FILE_DST")
     if [[ $TYPE != "ERR" && $SKIP_EXISTING_FILES == 1 ]]; then
-        print " > Skipping already existing file \"$FILE_DST\"\n"
+        print "Skipping already existing file \"$FILE_DST\"\n"
         return
     fi
 
@@ -480,8 +480,7 @@ function db_simple_upload_file
     if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
         print "DONE\n"
     else
-        print "FAILED\n"
-        print "An error occurred requesting /upload\n"
+        print "FAILED\nAn error occurred requesting /upload\n"
         ERROR_STATUS=1
     fi
 }
@@ -531,8 +530,7 @@ function db_chunked_upload_file
 
             #On error, the upload is retried for max 3 times
             if (( $UPLOAD_ERROR > 2 )); then
-                print " FAILED\n"
-                print "An error occurred requesting /chunked_upload\n"
+                print " FAILED\nAn error occurred requesting /chunked_upload\n"
                 ERROR_STATUS=1
                 return
             fi
@@ -559,8 +557,7 @@ function db_chunked_upload_file
 
             #On error, the commit is retried for max 3 times
             if (( $UPLOAD_ERROR > 2 )); then
-                print " FAILED\n"
-                print "An error occurred requesting /commit_chunked_upload\n"
+                print " FAILED\nAn error occurred requesting /commit_chunked_upload\n"
                 ERROR_STATUS=1
                 return
             fi
@@ -633,8 +630,8 @@ function db_download
         fi
 
         local DEST_DIR=$(normalize_path "$DST/$basedir")
-        print " > Downloading \"$SRC\" to \"$DEST_DIR\"... \n"
-        print " > Creating local directory \"$DEST_DIR\"... "
+        print "Downloading \"$SRC\" to \"$DEST_DIR\"... \n"
+        print "Creating local directory \"$DEST_DIR\"... "
         mkdir -p "$DEST_DIR"
 
         #Check
@@ -690,7 +687,7 @@ function db_download
 
     #Doesn't exists
     else
-        print " > No such file or directory: $SRC\n"
+        print "No such file or directory: $SRC\n"
         ERROR_STATUS=1
         return
     fi
@@ -714,7 +711,7 @@ function db_download_file
 
     #Checking if the file already exists
     if [[ -f $FILE_DST && $SKIP_EXISTING_FILES == 1 ]]; then
-        print " > Skipping already existing file \"$FILE_DST\"\n"
+        print "Skipping already existing file \"$FILE_DST\"\n"
         return
     fi
 
@@ -723,12 +720,12 @@ function db_download_file
     #2) Curl doesn't automatically creates files with 0 bytes size
     dd if=/dev/zero of="$FILE_DST" count=0 2> /dev/null
     if [[ $? != 0 ]]; then
-        print " > Error writing file $FILE_DST: permission denied\n"
+        print "Error writing file $FILE_DST: permission denied\n"
         ERROR_STATUS=1
         return
     fi
 
-    print " > Downloading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
+    print "Downloading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS --globoff -D "$RESPONSE_FILE" -o "$FILE_DST" "$API_DOWNLOAD_URL/$ACCESS_LEVEL/$(urlencode "$FILE_SRC")?oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM"
     check_http_response
 
@@ -747,7 +744,7 @@ function db_download_file
 function db_account_info
 {
     print "Dropbox Uploader v$VERSION\n\n"
-    print " > Getting info... "
+    print "Getting info... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM" "$API_INFO_URL" 2> /dev/null
     check_http_response
 
@@ -797,11 +794,18 @@ function db_account_info
 #Account unlink
 function db_unlink
 {
-    echo -ne "Are you sure you want unlink this script from your Dropbox account? [y/n]"
-    read answer
-    if [[ $answer == "y" ]]; then
-        rm -fr "$CONFIG_FILE"
-        echo -ne "DONE\n"
+    if [[ $GUI == 1 ]]; then
+        if zenity --question --title="Unlink Account" --text="Are you sure you want unlink this script from your Dropbox account?"; then
+            rm -fr "$CONFIG_FILE"
+            print "DONE\n"
+        fi
+    else
+        echo -ne "Are you sure you want unlink this script from your Dropbox account? [y/n]"
+        read answer
+        if [[ $answer == "y" ]]; then
+            rm -fr "$CONFIG_FILE"
+            echo -ne "DONE\n"
+        fi
     fi
 }
 
@@ -888,7 +892,7 @@ function db_mkdir
 {
     local DIR_DST=$(normalize_path "$1")
 
-    print " > Creating Directory \"$DIR_DST\"... "
+    print "Creating Directory \"$DIR_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" --data "oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM&root=$ACCESS_LEVEL&path=$(urlencode "$DIR_DST")" "$API_MKDIR_URL" 2> /dev/null
     check_http_response
 
@@ -909,7 +913,7 @@ function db_list
 {
     local DIR_DST=$(normalize_path "$1")
 
-    print " > Listing \"$DIR_DST\"... "
+    print "Listing \"$DIR_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -s --show-error --globoff -i -o "$RESPONSE_FILE" "$API_METADATA_URL/$ACCESS_LEVEL/$(urlencode "$DIR_DST")?oauth_consumer_key=$APPKEY&oauth_token=$OAUTH_ACCESS_TOKEN&oauth_signature_method=PLAINTEXT&oauth_signature=$APPSECRET%26$OAUTH_ACCESS_TOKEN_SECRET&oauth_timestamp=$(utime)&oauth_nonce=$RANDOM" 2> /dev/null
     check_http_response
 
@@ -990,7 +994,7 @@ function db_share
 
     #Check
     if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
-        print " > Share link: "
+        print "Share link: "
         if [[ $GUI == 1 ]]; then
             zenity --entry --title="Share Link:" --text="Share Link:" \
             --entry-text=$(sed -n 's/.*"url": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
@@ -1032,15 +1036,14 @@ if [[ -f $CONFIG_FILE ]]; then
 else
     zenity --info \
             --title="Primer uso" \
-            --text="Esta es la primera vez que corre este script\n \
-            1) Abre la siguiente URL en tu navegador, ingresa usando tu cuenta DropBox: https://www2.dropbox.com/developers/apps\n \
-            2) Clic en \"Create App\", selecciona \"Dropbox API app\"\n \
-            3) Selecciona \"Files and datastores\"\n \
-            4) Ahora continua con la configuraccion, escgiendo los permisos de la aplicacion y el acceso a restricciones de tu carpeta DropBox\n \
-            5) Ingresa el \"App Name\" que prefieras (e.g. MyUploader$RANDOM$RANDOM$RANDOM)\n\n \
-            Ahora, haz clic en \"Create App\".\n\n \
-            Cuando tu nueva aplicacion sea correctamente creada,\n \
-            ingresa tu App Key, App Secret y el Permission type mostrado en la pagina de configuracion"
+            --text="Esta es la primera vez que corre este script \
+            \n1) Abre la siguiente URL en tu navegador, ingresa usando tu cuenta DropBox: https://www2.dropbox.com/developers/apps \
+            \n2) Clic en \"Create App\", selecciona \"Dropbox API app\" \
+            \n3) Selecciona \"Files and datastores\" \
+            \n4) Ahora continua con la configuraccion, escgiendo los permisos de la aplicacion y el acceso a restricciones de tu carpeta DropBox \
+            \n5) Ingresa el \"App Name\" que prefieras (e.g. MyUploader$RANDOM$RANDOM$RANDOM) \
+            \nAhora, haz clic en \"Create App\". \
+            \nCuando tu nueva aplicacion sea correctamente creada, ingresa tu App Key, App Secret y el tipo de permisos mostrado en la pagina de configuracion."
 
     #Getting the app key and secret from the user
     while (true); do
@@ -1058,7 +1061,7 @@ else
             ACCESS_MSG="Full Dropbox"
         fi
 
-        if zenity --question --text="App key es $DB_APP_KEY, App secret es $DB_APP_SECRET y el nivel de acceso es $ACCESS_MSG. ok?"; then
+        if zenity --question --text="App key es $APPKEY, App secret es $APPSECRET y el nivel de acceso es $ACCESS_MSG. ok?"; then
         break;
         fi
     done

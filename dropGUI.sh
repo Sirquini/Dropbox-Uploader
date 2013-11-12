@@ -135,7 +135,6 @@ function info
 function unlink
 {
 	$DU -g unlink
-	dropGUI
 }
 
 ##########
