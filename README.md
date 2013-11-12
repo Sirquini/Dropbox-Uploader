@@ -1,3 +1,12 @@
+# Dropbox Uploader GUI
+
+Script en **BASH** (dropGUI.sh) que permite utilizar una interfaz gráfica para interactuar con el script Dropbox Uploader (dropbox_uploader.sh), permite utilizar todas las funciones del script con una interfaz simple implementada usando **Zenity**.
+
+Proyecto final del curso Linux para ingeniería, integrantes:
+- Santiago Quintero Pabón <[Sirquini](https://github.com/Sirquini)>
+- Edgar Manuel Amézquita <[EdgarM-](https://github.com/EdgarM-)>
+- Juan Camilo Arévalo <[arevaloarboled](https://github.com/arevaloarboled)>
+
 # Dropbox Uploader
 
 Dropbox Uploader is a **BASH** script which can be used to upload, download, delete, list files (and more!) from **Dropbox**, an online file sharing, synchronization and backup service. 
