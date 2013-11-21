@@ -70,7 +70,7 @@ function upload
 {
 	local SRC=`getFileSelect`
 	local DST=`optFileSelect 1`
-	$DU -g upload $SRC $DST
+	$DU -g upload "$SRC" "$DST"
 	dropGUI
 }
 
@@ -78,14 +78,14 @@ function download
 {
 	local SRC=`getFileRemote`
 	local DST=`optFileSelect 2`
-	$DU -g download $SRC $DST
+	$DU -g download "$SRC" "$DST"
 	dropGUI
 }
 
 function delete
 {
 	local DST=`getFileRemote`
-	$DU -g delete $DST
+	$DU -g delete "$DST"
 	dropGUI
 }
 
@@ -93,7 +93,7 @@ function move
 {
 	local SRC=`getFileRemote`
 	local DST=`getFileRemote`
-	$DU -g move $SRC $DST
+	$DU -g move "$SRC" "$DST"
 	dropGUI
 }
 
@@ -101,28 +101,28 @@ function copy
 {
 	local SRC=`getFileRemote`
 	local DST=`getFileRemote`
-	$DU -g copy $SRC $DST
+	$DU -g copy "$SRC" "$DST"
 	dropGUI
 }
 
 function mkdir
 {
 	local DST=`getFileRemote`
-	$DU -g mkdir $DST
+	$DU -g mkdir "$DST"
 	dropGUI
 }
 
 function list
 {
 	local DST=`optFileSelect 1`
-	$DU -g list $DST
+	$DU -g list "$DST"
 	dropGUI
 }
 
 function share
 {
 	local DST=`getFileRemote`
-	$DU -g share $DST
+	$DU -g share "$DST"
 	dropGUI
 }
 
